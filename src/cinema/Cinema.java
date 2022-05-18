@@ -11,20 +11,25 @@ public class Cinema {
 
         System.out.println("Enter the number of rows:");
 
-        int rows = sc.nextInt();
+        final int rows = sc.nextInt();
 
         System.out.println("Enter the number of seats in each row:");
 
-        int seats = sc.nextInt();
+        final int seats = sc.nextInt();
 
         char[][] cinemaGrid = new char[rows][seats];
 
         initializeGrid(cinemaGrid, rows, seats);
 
+        int ticketSold = 0;
+        int currentIncome = 0;
+        int totalIncome = ((rows * seats) <= 60) ? (rows * seats * 10) : (((rows / 2) * seats * 10) + ((rows - (rows / 2)) * seats * 8));
+
         while (true) {
 
             System.out.println("\n1. Show the seats");
             System.out.println("2. Buy a ticket");
+            System.out.println("3. Statistics");
             System.out.println("0. Exit");
 
             int selection = sc.nextInt();
@@ -37,28 +42,52 @@ public class Cinema {
                     break;
 
                 case 2 :
-                    System.out.println();
-                    System.out.println("Enter a row number:");
+                    while (true) {
 
-                    int selectedRow = sc.nextInt();
+                        System.out.println("\nEnter a row number:");
 
-                    System.out.println("Enter a seat number in that row:");
+                        int selectedRow = sc.nextInt();
 
-                    int selectedSeat = sc.nextInt();
+                        System.out.println("Enter a seat number in that row:");
 
-                    cinemaGrid[selectedRow-1][selectedSeat-1] = 'B';
+                        int selectedSeat = sc.nextInt();
 
-                    if (rows * seats < 60) {
-                        System.out.println("Ticket price: $10");
-                    } else {
+                        if ((selectedRow < 1 || selectedRow > rows) || (selectedSeat < 1 || selectedSeat > seats)) {
 
-                        if (selectedRow <= (rows / 2)) {
-
-                            System.out.println("Ticket price: $10");
+                            System.out.println("\nWrong input!");
+                        } else if (cinemaGrid[selectedRow - 1][selectedSeat - 1] == 'B') {
+                            System.out.println("\nThat ticket has already been purchased!");
                         } else {
-                            System.out.println("Ticket price: $8");
+                            cinemaGrid[selectedRow - 1][selectedSeat - 1] = 'B';
+                            ticketSold++;
+
+                            if (rows * seats < 60) {
+                                System.out.println("\nTicket price: $10");
+                                currentIncome += 10;
+                            } else {
+
+                                if (selectedRow <= (rows / 2)) {
+
+                                    System.out.println("\nTicket price: $10");
+                                    currentIncome += 10;
+                                } else {
+                                    System.out.println("\nTicket price: $8");
+                                    currentIncome += 8;
+                                }
+                            }
+                            break;
                         }
                     }
+                    break;
+
+                case 3 :
+
+                    double percentage = ( (100.00 / (rows * seats)) * (double) ticketSold);
+
+                    System.out.println("\nNumber of purchased tickets: " + ticketSold);
+                    System.out.printf("Percentage: %.2f%%\n", percentage);
+                    System.out.println("Current income: $" + currentIncome);
+                    System.out.println("Total income: $" + totalIncome);
                     break;
 
                 case 0 :
