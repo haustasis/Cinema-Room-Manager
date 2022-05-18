@@ -1,120 +1,107 @@
 package cinema;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.util.Scanner;
 
 public class Cinema {
 
-    /**
-     * Limit seats for ticket $10.
-     */
-    static final int MAX_SEATS = 60;
-    /**
-     * Normal price ticket for the front half.
-     */
-    static final int TICKET_NORMAL_PRICE = 10;
-    /**
-     * Low price ticket for the back half.
-     */
-    static final int TICKET_LOW_PRICE = 8;
+    public static void main(String[] args) {
+        // Write your code here
 
-    public static void main(final String[] args) {
-        Scanner in = new Scanner(new BufferedReader(new InputStreamReader(System.in)));
+        Scanner sc = new Scanner(System.in);
+
         System.out.println("Enter the number of rows:");
-        int rows = in.nextInt();
+
+        int rows = sc.nextInt();
+
         System.out.println("Enter the number of seats in each row:");
-        int seats = in.nextInt();
-        String[][] cinema = new String[rows + 1][seats + 1];
 
-        loadCinema(cinema);
-        printCinema(cinema);
-        System.out.println("\nEnter a row number:");
-        int rNum = in.nextInt();
-        System.out.println("Enter a seat number in that row:");
-        int sNum = in.nextInt();
-        ticketPrice(cinema, rows, seats, rNum, sNum);
-        printCinema(cinema);
-        totalIncome(rows, seats);
+        int seats = sc.nextInt();
 
+        char[][] cinemaGrid = new char[rows][seats];
+
+        initializeGrid(cinemaGrid, rows, seats);
+
+        while (true) {
+
+            System.out.println("\n1. Show the seats");
+            System.out.println("2. Buy a ticket");
+            System.out.println("0. Exit");
+
+            int selection = sc.nextInt();
+
+            switch (selection) {
+
+                case 1 :
+                    System.out.println();
+                    printCinema(cinemaGrid, rows, seats);
+                    break;
+
+                case 2 :
+                    System.out.println();
+                    System.out.println("Enter a row number:");
+
+                    int selectedRow = sc.nextInt();
+
+                    System.out.println("Enter a seat number in that row:");
+
+                    int selectedSeat = sc.nextInt();
+
+                    cinemaGrid[selectedRow-1][selectedSeat-1] = 'B';
+
+                    if (rows * seats < 60) {
+                        System.out.println("Ticket price: $10");
+                    } else {
+
+                        if (selectedRow <= (rows / 2)) {
+
+                            System.out.println("Ticket price: $10");
+                        } else {
+                            System.out.println("Ticket price: $8");
+                        }
+                    }
+                    break;
+
+                case 0 :
+                    return;
+            }
+        }
     }
 
-    /**
-     * Load initial status of cinema.
-     *
-     * @param cinema 2D Multi-dimensional array that represent a cinema.
-     */
-    public static void loadCinema(final String[][] cinema) {
-        for (int i = 0; i < cinema.length; i++) {
-            for (int j = 0; j < cinema[i].length; j++) {
-                if (i == 0 && j == 0) {
-                    cinema[i][j] = " ";
-                } else if (i == 0) {
-                    cinema[i][j] = String.valueOf(j);
-                } else if (j == 0) {
-                    cinema[i][j] = String.valueOf(i);
-                } else {
-                    cinema[i][j] = "S";
+    public static void initializeGrid(char[][] grid, int rows, int columns) {
+
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < columns; j++) {
+
+                grid[i][j] = 'S';
+            }
+        }
+    }
+
+    public static void printCinema(char[][] grid, int rows, int seats) {
+
+        System.out.println("\nCinema:");
+
+        for (int i = -1; i < rows; i++) {
+
+            if (i == -1) {
+
+                System.out.print(" ");
+                for (int j = 1; j <= seats; j++) {
+
+                    System.out.print(" " + j);
                 }
+                System.out.println();
+            } else {
+                for (int k = 0; k < seats; k++) {
+
+                    if (k == 0) {
+                        System.out.print((i + 1) + " " + grid[i][k]);
+                    } else {
+                        System.out.print(" " + grid[i][k]);
+                    }
+                }
+                System.out.println();
             }
-        }
-    }
-
-    /**
-     * Print status of cinema.
-     *
-     * @param cinema 2D Multi-dimensional array that represent a cinema.
-     */
-    public static void printCinema(final String[][] cinema) {
-        System.out.println();
-        System.out.println("Cinema:");
-        for (String[] row : cinema) {
-            for (String col : row) {
-                System.out.print(col + " ");
-            }
-            System.out.println();
-        }
-    }
-
-    /**
-     * Calculate ticket price for seat choose.
-     *
-     * @param cinema 2D Multi-dimensional array that represent a cinema.
-     * @param rows   Number of rows in the cinema.
-     * @param seats  Number of seats in each row in the cinema.
-     * @param rNum   Number of row choose.
-     * @param sNum   Number of seat choose in the row.
-     */
-    public static void ticketPrice(final String[][] cinema, final int rows, final int seats,
-                                   final int rNum, final int sNum) {
-        System.out.println();
-        int totalSet = rows * seats;
-        if (totalSet <= MAX_SEATS) {
-            System.out.println("Ticket price: $" + TICKET_NORMAL_PRICE);
-            cinema[rNum][sNum] = "B";
-        } else if (rNum <= rows / 2) {
-            System.out.println("Ticket price: $" + TICKET_NORMAL_PRICE);
-            cinema[rNum][sNum] = "B";
-        } else {
-            System.out.println("Ticket price: $" + TICKET_LOW_PRICE);
-            cinema[rNum][sNum] = "B";
-        }
-    }
-
-    /**
-     * Calculate total income to cinema.
-     *
-     * @param rows  Rows in the cinema.
-     * @param seats Seats in each row in the cinema.
-     */
-    public static void totalIncome(final int rows, final int seats) {
-        int totalSet = rows * seats;
-        if (totalSet <= MAX_SEATS) {
-            System.out.println("Total income:\n$" + totalSet * TICKET_NORMAL_PRICE);
-        } else {
-            int frontHalf = ((rows / 2) * seats) * TICKET_NORMAL_PRICE;
-            int backHalf = ((rows - rows / 2) * seats) * TICKET_LOW_PRICE;
-            System.out.println("Total income:\n$" + (frontHalf + backHalf));
         }
     }
 }
